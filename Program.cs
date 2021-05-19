@@ -19,6 +19,16 @@ namespace DIscordLCD
             AsyncContext.Run(() => MainAsync(args));
         }
 
+        class Properties
+        {
+            public ulong channelId { get; set; }
+            public ulong serverId { get; set; }
+            public string clientId { get; set; }
+            public string clientSecret { get; set; }
+            public string bearerToken { get; set; }
+            public bool resetKey { get; set; }
+        }
+
         public static async void MainAsync(string[] args)
         {
             List<ulong> speakers = new List<ulong>();
@@ -26,12 +36,14 @@ namespace DIscordLCD
             string[] scopes = new string[] { "rpc", "rpc.api" };
             string rpcToken = "";
 
-            ulong channelID = DiscordLCD.Properties.Settings.Default.channelID;
-            ulong serverID = DiscordLCD.Properties.Settings.Default.serverID;
-            string clientID = DiscordLCD.Properties.Settings.Default.clientID;
-            string clientSecret = DiscordLCD.Properties.Settings.Default.clientSecret;
-            string bearerToken = DiscordLCD.Properties.Settings.Default.bearerToken;
-            bool resetKey = DiscordLCD.Properties.Settings.Default.reset;
+            Properties data = JsonConvert.DeserializeObject<Properties>("");
+
+            ulong channelID = data.channelId;
+            ulong serverID = data.serverId;
+            string clientID = data.clientId;
+            string clientSecret = data.clientSecret;
+            string bearerToken = data.bearerToken;
+            bool resetKey = data.resetKey;
 
             DiscordRpcClient client = new DiscordRpcClient(clientID, "http://127.0.0.1");
             RequestOptions requestOptions = new RequestOptions();
@@ -74,13 +86,12 @@ namespace DIscordLCD
                 Dictionary<string, string> response = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
 
                 bearerToken = response["access_token"];
-                DiscordLCD.Properties.Settings.Default.bearerToken = bearerToken;
-                DiscordLCD.Properties.Settings.Default.Save();
+                data.bearerToken = bearerToken;
             }
 
             // Login and connect!
             await client.LoginAsync(TokenType.Bearer, bearerToken, false);
-            await client.ConnectAsync();
+            //await client.ConnectAsync();
 
             var server = await client.GetRpcGuildAsync(serverID);
             var serverName = server.Name;
