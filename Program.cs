@@ -108,6 +108,7 @@ namespace DIscordLCD
 
             // i don't like the color of await warnings
 #pragma warning disable 1998
+                /// CHANGE THIS TO MODERN EVENT HANDLERS
                 client.ApiClient.ReceivedRpcEvent += async (s1, s2, o1) => {
                 Console.WriteLine("ReceivedRpcEvent");
                 Console.WriteLine("s1: " + s1);
